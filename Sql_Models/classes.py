@@ -7,6 +7,8 @@ from fastapi import Depends
 from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTable
 from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase, SQLAlchemyBaseAccessTokenTable
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+
+
 DATABASE_URL = 'postgresql+asyncpg://postgres:rootroot@localhost/todoapp'
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
@@ -97,20 +99,6 @@ class AccessToken(SQLAlchemyBaseAccessTokenTable[int], Base):
     @classmethod
     def get_db(cls, session: 'AsyncSession'):
         return SQLAlchemyUserDatabase(session, cls)
-
-
-async def get_async_session() -> AsyncGenerator['AsyncSession', None]:
-    async with async_session_maker() as session:
-        yield session
-
-async def get_user_db(session: 'AsyncSession' = Depends(get_async_session)):
-    yield SQLAlchemyUserDatabase(session, User)
-
-
-async def get_access_token_db(
-    session: 'AsyncSession' = Depends(get_async_session),
-):  
-    yield SQLAlchemyAccessTokenDatabase(session, AccessToken)
 
 
 

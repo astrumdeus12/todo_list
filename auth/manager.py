@@ -1,11 +1,32 @@
-
+from typing import TYPE_CHECKING
 import uuid
 from typing import Optional
-
+from typing import AsyncGenerator
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, UUIDIDMixin,IntegerIDMixin
+from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTable
+from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase
+from sqlalchemy.ext.asyncio import create_async_engine
+from Sql_Models.classes import AccessToken, User, async_session_maker
 
-from Sql_Models.classes import User, get_user_db
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
+
+
+async def get_async_session() -> AsyncGenerator['AsyncSession', None]:
+    async with async_session_maker() as session:
+        yield session
+
+async def get_user_db(session: 'AsyncSession' = Depends(get_async_session)):
+    yield SQLAlchemyUserDatabase(session, User)
+
+
+async def get_access_token_db(
+    session: 'AsyncSession' = Depends(get_async_session),
+):  
+    yield SQLAlchemyAccessTokenDatabase(session, AccessToken)
+
 
 
 class UserManager(IntegerIDMixin, BaseUserManager[User, int]):
