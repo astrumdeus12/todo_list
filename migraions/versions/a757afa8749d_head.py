@@ -1,19 +1,20 @@
-"""first
+"""head
 
-Revision ID: 42db58aeadc7
-Revises: 4c5e71328f50
-Create Date: 2024-07-16 19:41:37.404801
+Revision ID: a757afa8749d
+Revises: 
+Create Date: 2024-08-02 12:22:29.063591
 
 """
 from typing import Sequence, Union
 
 from alembic import op
+import fastapi_users_db_sqlalchemy
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '42db58aeadc7'
-down_revision: Union[str, None] = '4c5e71328f50'
+revision: str = 'a757afa8749d'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
