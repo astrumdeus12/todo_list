@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 from schemas.models import Checker, Changer, Deleter, Adder
-from Dao.functions import change_status,check_tasks,add_task,delete_task  #, add_user,get_user,delete_user,change_user
+from Dao.functions import change_status,check_tasks,add_task,delete_task 
 from fastapi.security import HTTPBearer
 http_bearer = HTTPBearer(auto_error=False)
 
-router = APIRouter()
+router1 = APIRouter()
 
 
 
-@router.post('/tasks/all')
+@router1.post('/tasks/all')
 def check_get(item : Checker):
 
     res = check_tasks(item.day_id)
@@ -16,7 +16,7 @@ def check_get(item : Checker):
 
 
 
-@router.post('/task/add')
+@router1.post('/task/add')
 def add_post(task : Adder):
     
     add_task( id = task.day_id, txt = task.txt)
@@ -24,7 +24,7 @@ def add_post(task : Adder):
 
 
 
-@router.post('/tasks/change')
+@router1.post('/tasks/change')
 def change_post(item : Changer):
     
     change_status(item.day_id, item.task_id)
@@ -32,7 +32,7 @@ def change_post(item : Changer):
 
 
 
-@router.post('/tasks/delete')
+@router1.post('/tasks/delete')
 def del_post(item : Deleter):
 
     delete_task(item.day_id, item.task_id)

@@ -1,13 +1,15 @@
-from Sql_Models.classes import days, Todo_day, Base
+from fastapi import Depends
+import fastapi_users
+
 from sqlalchemy import select, delete, create_engine
 from sqlalchemy.orm import Session
+from Dao.orm_models.classess import user, days, todo_day, engine
 
-engine = create_engine(
-    url='postgresql+asyncpg://postgres:rootroot@localhost/todoapp',
-      echo=True)
 
+
+print(fastapi_users)
 session = Session(engine, expire_on_commit=True)
-
+current_active_verified_user = fastapi_users.current_user(active=True, verified=True)
 
 def check_tasks(id:int):
     with session as ses:
@@ -16,9 +18,9 @@ def check_tasks(id:int):
         res = ses.execute(
             select(
                 days.day,
-                Todo_day.task,
-                Todo_day.status
-                ).where(Todo_day.day_fk == id)).all()
+                todo_day.task,
+                todo_day.status
+                ).where(todo_day.day_fk == id)).all()
         
         ses.commit()
 
@@ -30,25 +32,25 @@ def change_status(day:int, tsk:int):
 
        ses.scalar(
            select(
-               Todo_day
+               todo_day
                ).where(
-                   Todo_day.day_fk == day
+                   todo_day.day_fk == day
                    ).where(
-                       Todo_day.id == tsk
+                       todo_day.id == tsk
                        )).status = True
        
        ses.commit()
 
-       
+    
 
 def delete_task(day_id:int, task_id:int):
     with session as ses:
         ses.begin()
 
         ses.execute(
-            delete(Todo_day)
-            .where(Todo_day.day_fk == day_id)
-            .where(Todo_day.id == task_id))
+            delete(todo_day)
+            .where(todo_day.day_fk == day_id)
+            .where(todo_day.id == task_id))
         
         ses.commit()
 
@@ -63,12 +65,13 @@ def add_task(id:int, txt:str):
             .where(days.id == id)
             )
         day.tasks.append(
-            Todo_day( task = txt)
+            todo_day( task = txt)
             )
         
         ses.commit()
 
-
+def protected_route(user: user = Depends(current_active_verified_user)):
+    return f"Hello, {user.email}"
 
 
 # def add_user(username : str, email : str, password : str):

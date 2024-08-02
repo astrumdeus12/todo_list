@@ -7,7 +7,7 @@ from fastapi_users import BaseUserManager, UUIDIDMixin,IntegerIDMixin
 from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTable
 from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase
 from sqlalchemy.ext.asyncio import create_async_engine
-from Sql_Models.classes import AccessToken, User, async_session_maker
+from sql_models.classes import AccessToken, User, async_session_maker
 
 
 if TYPE_CHECKING:
