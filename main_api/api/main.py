@@ -1,12 +1,11 @@
-from fastapi import FastAPI, APIRouter, Depends
-from Api.routes import router1
+from fastapi import FastAPI, Depends
+from main_api.api.routers import router1
 from fastapi_users import fastapi_users, FastAPIUsers
-from Dao.orm_models.classess import user
-from auth.backauth import auth_backend
-from auth.schemas import UserCreate,UserRead, UserUpdate
-from auth.manager import get_user_manager
+from all_models.orm_models.classess import user
+from main_api.auth.backauth import auth_backend
+from main_api.auth.schemas import UserCreate,UserRead, UserUpdate
+from main_api.auth.manager import get_user_manager
 
-from fastapi.security import HTTPBearer
 
 
 
@@ -16,6 +15,7 @@ fastapi_users = FastAPIUsers[user, int](
     get_user_manager,
     [auth_backend],
 )
+
 
 @app.get('/')
 def start():
@@ -39,3 +39,7 @@ app.include_router(
     prefix="/users",
     tags=["users"],
 )
+
+@app.get("/protected_route")
+def protected_route(user: user = Depends(fastapi_users.current_user(active=True, verified=True))):
+    return f'{user.id}'

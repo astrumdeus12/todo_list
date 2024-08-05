@@ -1,17 +1,17 @@
 from sqlalchemy import MetaData, ForeignKey
-from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, Relationship, Session
+from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped, Relationship
 from typing import TYPE_CHECKING
-
-from typing import AsyncGenerator
-from fastapi import Depends
 from fastapi_users.db import SQLAlchemyUserDatabase, SQLAlchemyBaseUserTable
-from fastapi_users_db_sqlalchemy.access_token import SQLAlchemyAccessTokenDatabase, SQLAlchemyBaseAccessTokenTable
+from fastapi_users_db_sqlalchemy.access_token import  SQLAlchemyBaseAccessTokenTable
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 
 DATABASE_URL = 'postgresql+asyncpg://postgres:rootroot@localhost/todoapp'
 engine = create_async_engine(DATABASE_URL)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+
+
+
 class Base(DeclarativeBase):
     metadata = MetaData()
 
@@ -30,7 +30,8 @@ class days(Base):
     tasks : Mapped[
         list['todo_day']] = Relationship(
         back_populates='day_task',
-        uselist=True
+        uselist=True,
+        lazy='selectin'
         )
 
 
@@ -49,7 +50,9 @@ class todo_day(Base):
     
     day_task : Mapped['days'] = Relationship(
         back_populates='tasks',
-        uselist=False
+        uselist=False,
+        lazy='selectin'
+        
         )
     
     day_fk : Mapped[int] = mapped_column(
@@ -58,7 +61,7 @@ class todo_day(Base):
     
     task_user : Mapped['user'] = Relationship(
         back_populates='user_tasks',
-        uselist=False
+        uselist=False,  
     )
 
     user_fk : Mapped[int] = mapped_column(
@@ -87,7 +90,8 @@ class user(SQLAlchemyBaseUserTable[int], Base):
     
     user_tasks : Mapped[list['todo_day']] = Relationship(
         back_populates='task_user',
-        uselist=True
+        uselist=True,
+        lazy='selectin'
     )
     @classmethod
     def get_db(cls, session: 'AsyncSession'):

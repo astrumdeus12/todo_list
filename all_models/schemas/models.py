@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 
 class Checker(BaseModel):
-    day_id : str
+    day_id : int
     
 
 class Changer(BaseModel):
@@ -25,6 +25,4 @@ class User(BaseModel):
     email : str = None
     password : str
 
-# class AccessToken(BaseModel):
-#     lifetime:int = 3600
 

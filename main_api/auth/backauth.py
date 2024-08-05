@@ -2,16 +2,22 @@ from fastapi_users.authentication import BearerTransport, AuthenticationBackend
 from fastapi_users.authentication.strategy.db import AccessTokenDatabase, DatabaseStrategy
 from typing import TYPE_CHECKING
 from fastapi import Depends
+from main_api.auth.manager import get_access_token_db 
 
-from auth.manager import get_access_token_db 
+
+
 bearer_transport = BearerTransport(
     tokenUrl='auth/jwt/login'
 )
+
+
 if TYPE_CHECKING:
-    from sql_models.classes import AccessToken
+    from all_models.orm_models.classess import AccessToken
 def get_database_strategy(
-    access_token_db: AccessTokenDatabase['AccessToken'] = Depends(get_access_token_db),
-) -> DatabaseStrategy:
+    access_token_db:
+    AccessTokenDatabase['AccessToken']
+     = Depends(get_access_token_db)) -> DatabaseStrategy:
+    
     return DatabaseStrategy(
         access_token_db, 
         lifetime_seconds=3600
